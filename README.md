@@ -9,17 +9,17 @@ This open source alternative to expensive laboratory equipment is based on :
   
   Specs : suitable for gel electrophoresis or field inversion electrophoresis
   
-  -40v to 200v
-  -max 6.5 amps
-  -20ns switching time
+  - 40v to 200v
+  - max 6.5 amps
+  - 20ns switching time
   
   Programmable elements :
-   -pre-heating timer
-   -runtime timer
-   -first pulse duration
-   -last pulse duration
-   -ratio forward/backward pulse
-   -linear or exponential time ramp
+   - pre-heating timer
+   - runtime timer
+   - first pulse duration
+   - last pulse duration
+   - ratio forward/backward pulse
+   - linear or exponential time ramp
   
   
   
