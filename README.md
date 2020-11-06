@@ -1,4 +1,25 @@
 # Switchophorese
-Open Source Field Inversion Gel Electrophoresis (FIGE)
+Open source programmable Field Inversion Gel Electrophoresis (FIGE) module.
+Connect this module between your classic lab power supply and your gel tray.
 
-An open source alternative to expensive laboratory equipment, with better specs.
+This open source alternative to expensive laboratory equipment is based on :
+  - Arduino mega
+  - Tft 2.8 lcd touch screen module
+  - Mosfet full h-bridge circuit
+  
+  Specs : suitable for gel electrophoresis or field inversion electrophoresis
+  
+  40v to 200v
+  max 6.5 amps
+  20ns switching time
+  
+  Programmable elements :
+   pre-heating timer
+   runtime timer
+   first pulse duration
+   last pulse duration
+   ratio forward/backward pulse
+   linear or exponential time ramp
+  
+  
+  
