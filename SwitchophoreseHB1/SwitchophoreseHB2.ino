@@ -1,11 +1,10 @@
 //VULCAIN INNOVATION
-//08/11/2019
+//06/11/2020
 
 #include <MCUFRIEND_kbv.h>
 MCUFRIEND_kbv tft;       
 #include <TouchScreen.h>
 #include "bitmaps.h"
-#include <arduino-timer.h>
 
 #if defined(__SAM3X8E__)
 #undef __FlashStringHelper::F(string_literal)
@@ -210,12 +209,8 @@ bool back = false;
 bool Start = false;
 bool pause = true;
 
-unsigned long currentMillis = 0;
 
-
-
-char unit;
-int Init = 0;
+int Init = 0; // id of boxes on initscreen
 int Pulse = 0;
 
 //////////////////////////////////////////////////////////////////////////////////////////// Setup
@@ -635,10 +630,8 @@ if (currentPage==4){
 int positive = 22;
 int negative = 24;
 unsigned long previousMillis = 0;
-unsigned long currentMillis = 0; 
-unsigned long previousPulseMillis = 0;   
+unsigned long currentMillis = 0;  
 
-int countPause = 0;
 bool isTimer = true;
 unsigned long pauseTime = 0;
 unsigned long pauserun = 0;
@@ -655,26 +648,29 @@ unsigned long pulseMillis = 0;
 unsigned long pulsebMillis = 0;
 unsigned long previousfPulseMillis=0;
 unsigned long previousbPulseMillis=0;
-unsigned long checkTime1 = 0;
-unsigned long checkTime2 = 0;
-
 
 long runTimer = runSec*1000+runMin*60000+runHour*3600000; // en millisecondes; // running screen
-// linear equation
+
 long Tsf = fPulseSec * 1000 + fPulseMilliSec * 10; // Total forward pulse
-long Tsb = (Tsf*ratio)/100; // Total backward pulse
+long Tsb = Tsf*ratio/100; // Total backward pulse
 long Tef = lPulseSec * 1000 + lPulseMilliSec * 10; // Total forward pulse
-long Teb = (Tef*ratio)/100; // Total backward pulse
+long Teb = Tef*ratio/100; // Total backward pulse
 long Ts=Tsf+Tsb; // Total start f+b pulses
 long Te=Tef+Teb; // Total end f+b pulses
+
+// linear equation
 long nbPulse = 2*runTimer/(Ts+Te);
 long increment = (Te-Ts)/(nbPulse-1);
-long count = 0;
-bool signePulse = true; //true = + , false = -
-bool backward = false;
+
 // exponential equation
 long incrementExpo = (runTimer - Ts)*(runTimer - Te);
 long nbPulseExpo = log(Te/Ts)+1;
+
+long count = 0;
+bool signePulse = true; //true = + , false = -
+bool backward = false;
+
+
 
         //pinMode ( positive, OUTPUT);
         DDRA |= 1 << DDA0;
@@ -722,10 +718,10 @@ if ( currentMillis-startInit < (initSec*1000+initMin*60000+initHour*3600000)+ela
     int minInitText = (timeInitText-(hourInitText*60))/60;
     int secInitText = timeInitText-((hourInitText*60)+(minInitText*60));
     
-    tft.fillRect(85,48,150,30,BLACK); // Timer text
+    tft.fillRect(85,48,160,30,BLACK); // Timer text
     tft.setTextSize(3); 
     tft.setTextColor(WHITE);
-    tft.setCursor(90, 50); //timer
+    tft.setCursor(115, 50); //timer
     tft.print(hourInitText);
     tft.print(":");
     tft.print(minInitText-(hourInitText*59));
@@ -763,20 +759,20 @@ if ( runMillis-startRun < (runSec*1000+runMin*60000+runHour*3600000)+elapsedRunT
 
 if(linear == true){                                               ///// Linear equation
 if (back == false){
-checkTime1 = millis();      
-    tft.setCursor(140, 150); //time pulse
-    tft.setTextSize(3); 
+    
+    tft.setCursor(135, 135); //time pulse
+    tft.setTextSize(4); 
     tft.setTextColor(BLACK);
     tft.print(" +");
     tft.setTextColor(RED);
-    tft.setCursor(140, 150);
+    tft.setCursor(135, 135);
     tft.print("+");
     
     
 pulseMillis = millis();
 digitalWrite(positive, HIGH);
 
-if (pulseMillis-previousfPulseMillis >= Tsf+(count*increment)){
+if (pulseMillis-previousfPulseMillis >= Tsf+(count*increment)-(count*increment)*ratio/100){//-(Tsb+(count*increment)*ratio/100)){
 digitalWrite(positive, LOW);
 
 back = true;
@@ -784,12 +780,12 @@ previousbPulseMillis=millis();}
 }
 if (back == true){
      
-    tft.setCursor(140, 150); //time pulse
-    tft.setTextSize(3); 
+    tft.setCursor(135, 135); //time pulse
+    tft.setTextSize(4); 
     tft.setTextColor(BLACK);
     tft.print("+");
     tft.setTextColor(BLUE);
-    tft.setCursor(140, 150);
+    tft.setCursor(135, 135);
     tft.print(" -");
     
   pulsebMillis = millis();
@@ -801,15 +797,15 @@ if (pulsebMillis-previousbPulseMillis >= Tsb+(count*increment)*ratio/100){//(Tsf
   back = false;
   previousfPulseMillis=millis();
   count++;
-checkTime2 = millis();   
+ 
 }
 }
 }
 if(expo == true){
 if (back == false){
     
-    tft.setCursor(140, 150); //time pulse
-    tft.setTextSize(3); 
+    tft.setCursor(135, 135); //time pulse
+    tft.setTextSize(4); 
     tft.setTextColor(RED);
     tft.print("+ ");
     
@@ -822,14 +818,14 @@ previousbPulseMillis=millis();}
 }
 if (back == true){
    
-    tft.setCursor(140, 150); //time pulse
-    tft.setTextSize(3); 
+    tft.setCursor(135, 135); //time pulse
+    tft.setTextSize(4); 
     tft.setTextColor(BLUE);
     tft.print(" -");
     
   pulsebMillis = millis();
 digitalWrite(negative, HIGH);
-if (pulsebMillis-previousbPulseMillis >= (Tsf +(incrementExpo*count)*ratio/100)){
+if (pulsebMillis-previousbPulseMillis >= Tsb +(incrementExpo*count)*ratio/100){
   digitalWrite(negative, LOW);
   back = false;
   previousfPulseMillis=millis();
@@ -847,33 +843,33 @@ if (pulsebMillis-previousbPulseMillis >= (Tsf +(incrementExpo*count)*ratio/100))
     int minText = (timeText-(hourText*60))/60;
     int secText = timeText-((hourText*60)+(minText*60));
     //unsigned int minsText = minText-(hourText*60);           //toujours positif, comme laurie
-    tft.fillRect(85,48,150,30,BLACK);
+    tft.fillRect(85,48,160,30,BLACK);
     tft.setTextSize(3); 
     tft.setTextColor(WHITE);
-    tft.setCursor(90, 50); //timer
+    tft.setCursor(115, 50); //timer
     tft.print(hourText);
     tft.print(":");
     tft.print(minText-(hourText*59));
     tft.print(":");
     tft.print(secText);
 
-    tft.fillRect(179,88,100,30,BLACK); 
-    tft.setCursor(70, 90); //nombre pulses
+    tft.fillRect(179,88,110,30,BLACK); 
+    tft.setCursor(90, 90); //nombre pulses
     tft.setTextSize(2); 
     tft.setTextColor(WHITE);
     tft.print("Nb Pulses:");
     tft.setTextColor(LAWNGREEN);
     tft.print(count);
 
-if(linear == true){
+/*if(linear == true){
        tft.fillRect(189,118,150,30,BLACK); 
     tft.setCursor(70, 120); //time pulse
     tft.setTextSize(2); 
     tft.setTextColor(WHITE);
     tft.print("Time Pulse:");
     tft.setTextColor(LAWNGREEN);
-    tft.print(Tsf+(count*increment)+Tsb+(count*increment)*ratio/100);}
-    //tft.print(checkTime1-checkTime2);}
+    tft.print(Tsf+(count*increment)+Tsb);}
+
 if(expo == true){
        tft.fillRect(189,118,150,30,BLACK); 
     tft.setCursor(70, 120); //time pulse
@@ -881,7 +877,7 @@ if(expo == true){
     tft.setTextColor(WHITE);
     tft.print("Time Pulse:");
     tft.setTextColor(LAWNGREEN);
-    tft.print((Tsf +(incrementExpo*count)*ratio/100));}
+    tft.print((Tsf +(incrementExpo*count)*ratio/100));}*/
 
     } 
 
@@ -920,7 +916,6 @@ if( (runMillis-startRun) >= (runSec*1000+runMin*60000+runHour*3600000)+elapsedRu
           }
         delay(50);
       pause = !pause;
-      countPause++;
       }
       
       
@@ -981,15 +976,7 @@ void drawFrameRED(char sign) {
            }
 }
 
-
-void drawFrameBLUE(char ramp) {
-  if (ramp == "linear"){
-    
-  }
- if (ramp == "expo"){
-    
-  } 
-}
+//============================ welcome screen ========================== //
 
 void welcome_screen(void)
 
@@ -997,9 +984,8 @@ void welcome_screen(void)
 
 tft.fillScreen(WHITE); 
 
-// ================================================================================ //
-// ================================ LOGO ========================================== //
-// ================================================================================ //
+
+// LOGO
 
 int h = 135,w = 354, row, col, buffidx=0; // Brand logo (voir BITMAPS_H)
   for (row=90; row<h; row++) { // For each scanline...
@@ -1458,9 +1444,12 @@ void run_screen(void)
 {   tft.fillScreen(BLACK);
   
 
+    tft.setTextColor(WHITE); // escape
+    tft.setTextSize(3); 
+    tft.setCursor(290, 4);
+    tft.print("<");  
     
-    
-    tft.setCursor(90, 50); //timer
+    tft.setCursor(115, 50); //timer
     tft.setTextSize(3); 
     tft.setTextColor(WHITE);
     tft.print(initHour);
@@ -1469,19 +1458,19 @@ void run_screen(void)
     tft.print(":");
     tft.print(initSec);
 
-    tft.setCursor(70, 90); //nombre pulses
+    tft.setCursor(90, 90); //nombre pulses
     tft.setTextSize(2); 
     tft.setTextColor(WHITE);
     tft.print("Nb Pulses:");
     tft.setTextColor(LAWNGREEN);
     tft.print("00");
 
-    tft.setCursor(70, 120); //time pulse
+    /*tft.setCursor(70, 120); //time pulse
     tft.setTextSize(2); 
     tft.setTextColor(WHITE);
     tft.print("Time Pulse:");
     tft.setTextColor(LAWNGREEN);
-    tft.print("00");
+    tft.print("00");*/
 
 
     int L=100;
