@@ -2,7 +2,7 @@
 Open source programmable Field Inversion Gel Electrophoresis (FIGE) module.
 Connect this module between your classic lab power supply and your gel tray.
 
-This open source alternative to expensive laboratory equipment is based on :
+This open source laboratory equipment is based on :
   - Arduino mega
   - Tft 2.8 lcd touch screen module
   - Mosfet full h-bridge circuit
