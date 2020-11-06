@@ -20,6 +20,10 @@ This open source laboratory equipment is based on :
    - last pulse duration
    - ratio forward/backward pulse
    - linear or exponential time ramp
+   
+   Libraries used :  
+https://github.com/prenticedavid/MCUFRIEND_kbv  
+https://github.com/adafruit/Adafruit_TouchScreen
   
   
   
